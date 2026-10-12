@@ -48,6 +48,8 @@ for (const [route, page] of Object.entries(metadata)) {
   html = updateMeta(html, 'property', 'og:title', page.ogTitle)
   html = updateMeta(html, 'property', 'og:description', page.ogDescription)
   html = updateMeta(html, 'property', 'og:url', page.canonicalUrl)
+  html = updateMeta(html, 'name', 'twitter:title', page.ogTitle)
+  html = updateMeta(html, 'name', 'twitter:description', page.ogDescription)
 
   // Assert each route shell contains one correct copy of every required field.
   for (const [label, value] of Object.entries({ title: page.title, description: page.description, canonicalUrl: page.canonicalUrl, ogTitle: page.ogTitle, ogDescription: page.ogDescription })) {
