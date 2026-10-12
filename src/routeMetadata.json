@@ -1,0 +1,37 @@
+{
+  "/": {
+    "title": "Kier Whensel Anticuando — Developer Portfolio",
+    "description": "Kier Whensel Anticuando — web developer building responsive websites and growing skills in backend development, APIs, and .NET.",
+    "canonicalUrl": "https://kier-whensel-anticuando.vercel.app/",
+    "ogTitle": "Kier Whensel Anticuando — Developer Portfolio",
+    "ogDescription": "Kier Whensel Anticuando — web developer building responsive websites and growing skills in backend development, APIs, and .NET."
+  },
+  "/work": {
+    "title": "Work | Kier Whensel Anticuando",
+    "description": "Explore website projects by Kier Whensel Anticuando, including hospitality, café, corporate, education, and custom furniture websites.",
+    "canonicalUrl": "https://kier-whensel-anticuando.vercel.app/work",
+    "ogTitle": "Work | Kier Whensel Anticuando",
+    "ogDescription": "Explore website projects by Kier Whensel Anticuando, including hospitality, café, corporate, education, and custom furniture websites."
+  },
+  "/services": {
+    "title": "Services | Kier Whensel Anticuando",
+    "description": "Website development services from Kier Whensel Anticuando, including WordPress, frontend implementation, and website updates and maintenance.",
+    "canonicalUrl": "https://kier-whensel-anticuando.vercel.app/services",
+    "ogTitle": "Services | Kier Whensel Anticuando",
+    "ogDescription": "Website development services from Kier Whensel Anticuando, including WordPress, frontend implementation, and website updates and maintenance."
+  },
+  "/about": {
+    "title": "About | Kier Whensel Anticuando",
+    "description": "Learn about Kier Whensel Anticuando, an IT graduate with website development experience at Joyno Inc. and a growing focus on backend development.",
+    "canonicalUrl": "https://kier-whensel-anticuando.vercel.app/about",
+    "ogTitle": "About | Kier Whensel Anticuando",
+    "ogDescription": "Learn about Kier Whensel Anticuando, an IT graduate with website development experience at Joyno Inc. and a growing focus on backend development."
+  },
+  "/contact": {
+    "title": "Contact | Kier Whensel Anticuando",
+    "description": "Contact Kier Whensel Anticuando about website projects, development services, or professional opportunities.",
+    "canonicalUrl": "https://kier-whensel-anticuando.vercel.app/contact",
+    "ogTitle": "Contact | Kier Whensel Anticuando",
+    "ogDescription": "Contact Kier Whensel Anticuando about website projects, development services, or professional opportunities."
+  }
+}
