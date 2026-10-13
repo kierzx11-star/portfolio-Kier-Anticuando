@@ -41,6 +41,30 @@ function updateTitle(html, title) {
   return html.replace(titlePattern, `<title>${title.replaceAll('&', '&amp;').replaceAll('<', '&lt;')}</title>`)
 }
 
+const websiteSchemaPattern = /<script\b(?=[^>]*\bid=["']homepage-website-schema["'])(?=[^>]*\btype=["']application\/ld\+json["'])[^>]*>([\s\S]*?)<\/script>/gi
+
+function configureWebsiteSchema(html, route) {
+  if (route !== '/') html = html.replace(websiteSchemaPattern, '')
+
+  const schemaScripts = [...html.matchAll(/<script\b(?=[^>]*\btype=["']application\/ld\+json["'])[^>]*>([\s\S]*?)<\/script>/gi)]
+  const expectedCount = route === '/' ? 1 : 0
+  if (schemaScripts.length !== expectedCount) {
+    throw new Error(`Expected ${expectedCount} JSON-LD block${expectedCount === 1 ? '' : 's'} in ${route} shell, found ${schemaScripts.length}`)
+  }
+
+  if (route === '/') {
+    const schema = JSON.parse(schemaScripts[0][1])
+    if (schema['@context'] !== 'https://schema.org' || schema['@type'] !== 'WebSite') {
+      throw new Error('Homepage JSON-LD must use the Schema.org WebSite type')
+    }
+    if (schema.name !== 'Kier Whensel Anticuando' || schema.url !== metadata['/'].canonicalUrl) {
+      throw new Error('Homepage WebSite JSON-LD name or URL does not match the configured canonical identity')
+    }
+  }
+
+  return html
+}
+
 function injectRootContent(html, content, route) {
   const rootPattern = /<div id="root"><\/div>/g
   const rootCount = [...html.matchAll(rootPattern)].length
@@ -68,6 +92,7 @@ try {
 
   for (const [route, page] of Object.entries(metadata)) {
     let html = template
+    html = configureWebsiteSchema(html, route)
     html = updateTitle(html, page.title)
     html = updateMeta(html, 'name', 'description', page.description)
     html = updateCanonical(html, page.canonicalUrl)
