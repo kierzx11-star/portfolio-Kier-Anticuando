@@ -13,6 +13,48 @@
     "ogTitle": "Work | Kier Whensel Anticuando",
     "ogDescription": "Explore Kier Whensel Anticuando’s web development projects: WordPress websites, a GoDaddy Website Builder site, and an academic tourism app built with Kotlin, PHP, and Firebase."
   },
+  "/work/kasa-maharlika": {
+    "title": "Kasa Maharlika Website Project | Kier Whensel Anticuando",
+    "description": "Kasa Maharlika website project by Kier Whensel Anticuando: responsive WordPress property pages, inquiry form, email notification flow, and SEO updates.",
+    "canonicalUrl": "https://kier-whensel-anticuando.vercel.app/work/kasa-maharlika",
+    "ogTitle": "Kasa Maharlika Website Project | Kier Whensel Anticuando",
+    "ogDescription": "Kasa Maharlika website project by Kier Whensel Anticuando: responsive WordPress property pages, inquiry form, email notification flow, and SEO updates."
+  },
+  "/work/monjoe": {
+    "title": "Monjoe Garden Cafe Website Project | Kier Whensel Anticuando",
+    "description": "Monjoe Garden Cafe website project by Kier Whensel Anticuando, featuring WordPress page, menu, content, imagery, and technical SEO updates.",
+    "canonicalUrl": "https://kier-whensel-anticuando.vercel.app/work/monjoe",
+    "ogTitle": "Monjoe Garden Cafe Website Project | Kier Whensel Anticuando",
+    "ogDescription": "Monjoe Garden Cafe website project by Kier Whensel Anticuando, featuring WordPress page, menu, content, imagery, and technical SEO updates."
+  },
+  "/work/primesteps": {
+    "title": "PrimeSteps Learning Hub Website Project | Kier Whensel Anticuando",
+    "description": "PrimeSteps Learning Hub project by Kier Whensel Anticuando: GoDaddy Website Builder updates, content maintenance, and monthly traffic and analytics insights.",
+    "canonicalUrl": "https://kier-whensel-anticuando.vercel.app/work/primesteps",
+    "ogTitle": "PrimeSteps Learning Hub Website Project | Kier Whensel Anticuando",
+    "ogDescription": "PrimeSteps Learning Hub project by Kier Whensel Anticuando: GoDaddy Website Builder updates, content maintenance, and monthly traffic and analytics insights."
+  },
+  "/work/shurra": {
+    "title": "Shurra Group of Companies Website Project | Kier Whensel Anticuando",
+    "description": "Shurra Group of Companies website project by Kier Whensel Anticuando, covering WordPress page updates, styling, team content, and technical SEO.",
+    "canonicalUrl": "https://kier-whensel-anticuando.vercel.app/work/shurra",
+    "ogTitle": "Shurra Group of Companies Website Project | Kier Whensel Anticuando",
+    "ogDescription": "Shurra Group of Companies website project by Kier Whensel Anticuando, covering WordPress page updates, styling, team content, and technical SEO."
+  },
+  "/work/bw-customized-furniture": {
+    "title": "B&W Customized Furniture Website Project | Kier Whensel Anticuando",
+    "description": "B&W Customized Furniture website project by Kier Whensel Anticuando: WordPress page layouts, furniture gallery, responsive styling, content, and SEO.",
+    "canonicalUrl": "https://kier-whensel-anticuando.vercel.app/work/bw-customized-furniture",
+    "ogTitle": "B&W Customized Furniture Website Project | Kier Whensel Anticuando",
+    "ogDescription": "B&W Customized Furniture website project by Kier Whensel Anticuando: WordPress page layouts, furniture gallery, responsive styling, content, and SEO."
+  },
+  "/work/barili-tourism-app": {
+    "title": "Barili Tourism App Academic Project | Kier Whensel Anticuando",
+    "description": "Academic prototype by Kier Whensel Anticuando: a Kotlin, PHP, and Firebase tourism information system concept for Barili, Cebu; not publicly deployed.",
+    "canonicalUrl": "https://kier-whensel-anticuando.vercel.app/work/barili-tourism-app",
+    "ogTitle": "Barili Tourism App Academic Project | Kier Whensel Anticuando",
+    "ogDescription": "Academic prototype by Kier Whensel Anticuando: a Kotlin, PHP, and Firebase tourism information system concept for Barili, Cebu; not publicly deployed."
+  },
   "/services": {
     "title": "Services | Kier Whensel Anticuando",
     "description": "Website development services from Kier Whensel Anticuando, including WordPress, frontend implementation, and website updates and maintenance.",

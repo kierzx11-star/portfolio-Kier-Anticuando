@@ -142,6 +142,7 @@ try {
     if (!renderedContent.includes('<main id="main-content"')) {
       throw new Error(`Rendered ${route} content is missing the main landmark`)
     }
+    assertOneMatch(renderedContent, /<h1\b/gi, 'H1', route)
     html = injectRootContent(html, renderedContent, route)
 
     // Assert each route shell contains one correct copy of its metadata and mount.
@@ -155,7 +156,7 @@ try {
     assertOneMatch(html, /<div id="root">/gi, 'React mount', route)
 
     for (const [label, value] of Object.entries({ title: page.title, description: page.description, canonicalUrl: page.canonicalUrl, ogTitle: page.ogTitle, ogDescription: page.ogDescription })) {
-      if (!html.includes(value)) throw new Error(`Generated ${route} shell is missing ${label}`)
+      if (!html.includes(escapeAttribute(value))) throw new Error(`Generated ${route} shell is missing ${label}`)
     }
 
     const outputPath = route === '/' ? resolve(outputDirectory, 'index.html') : resolve(outputDirectory, route.slice(1), 'index.html')
