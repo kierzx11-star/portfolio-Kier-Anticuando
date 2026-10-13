@@ -42,23 +42,59 @@ function updateTitle(html, title) {
 }
 
 const websiteSchemaPattern = /<script\b(?=[^>]*\bid=["']homepage-website-schema["'])(?=[^>]*\btype=["']application\/ld\+json["'])[^>]*>([\s\S]*?)<\/script>/gi
+const aboutPersonSchemaPattern = /<script\b(?=[^>]*\bid=["']about-person-schema["'])(?=[^>]*\btype=["']application\/ld\+json["'])[^>]*>([\s\S]*?)<\/script>/gi
 
-function configureWebsiteSchema(html, route) {
+const aboutPersonSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Kier Whensel Anticuando',
+  url: metadata['/about'].canonicalUrl,
+  jobTitle: 'Developer',
+  sameAs: 'https://github.com/kierzx11-star',
+}
+
+function configureRouteSchemas(html, route) {
   if (route !== '/') html = html.replace(websiteSchemaPattern, '')
+  if (route !== '/about') html = html.replace(aboutPersonSchemaPattern, '')
+
+  const existingPersonSchemas = [...html.matchAll(aboutPersonSchemaPattern)]
+  if (route === '/about') {
+    if (existingPersonSchemas.length !== 0) {
+      throw new Error(`Expected no pre-existing About Person schema before injection, found ${existingPersonSchemas.length}`)
+    }
+    const headEnd = html.lastIndexOf('</head>')
+    if (headEnd < 0) throw new Error('Could not find the document head for About Person schema')
+    const personScript = `<script type="application/ld+json" id="about-person-schema">\n${JSON.stringify(aboutPersonSchema, null, 2)}\n    </script>\n  `
+    html = `${html.slice(0, headEnd)}${personScript}${html.slice(headEnd)}`
+  }
 
   const schemaScripts = [...html.matchAll(/<script\b(?=[^>]*\btype=["']application\/ld\+json["'])[^>]*>([\s\S]*?)<\/script>/gi)]
-  const expectedCount = route === '/' ? 1 : 0
+  const expectedCount = route === '/' || route === '/about' ? 1 : 0
   if (schemaScripts.length !== expectedCount) {
     throw new Error(`Expected ${expectedCount} JSON-LD block${expectedCount === 1 ? '' : 's'} in ${route} shell, found ${schemaScripts.length}`)
   }
 
   if (route === '/') {
-    const schema = JSON.parse(schemaScripts[0][1])
+    const websiteSchema = [...html.matchAll(websiteSchemaPattern)]
+    if (websiteSchema.length !== 1) throw new Error(`Expected one homepage WebSite schema, found ${websiteSchema.length}`)
+    const schema = JSON.parse(websiteSchema[0][1])
     if (schema['@context'] !== 'https://schema.org' || schema['@type'] !== 'WebSite') {
       throw new Error('Homepage JSON-LD must use the Schema.org WebSite type')
     }
     if (schema.name !== 'Kier Whensel Anticuando' || schema.url !== metadata['/'].canonicalUrl) {
       throw new Error('Homepage WebSite JSON-LD name or URL does not match the configured canonical identity')
+    }
+  } else if (route === '/about') {
+    const personSchema = [...html.matchAll(aboutPersonSchemaPattern)]
+    if (personSchema.length !== 1) throw new Error(`Expected one About Person schema, found ${personSchema.length}`)
+    const schema = JSON.parse(personSchema[0][1])
+    if (schema['@context'] !== aboutPersonSchema['@context'] || schema['@type'] !== aboutPersonSchema['@type']) {
+      throw new Error('About JSON-LD must use the Schema.org Person type')
+    }
+    for (const [key, value] of Object.entries(aboutPersonSchema)) {
+      if (JSON.stringify(schema[key]) !== JSON.stringify(value)) {
+        throw new Error(`About Person JSON-LD ${key} does not match the approved value`)
+      }
     }
   }
 
@@ -92,7 +128,7 @@ try {
 
   for (const [route, page] of Object.entries(metadata)) {
     let html = template
-    html = configureWebsiteSchema(html, route)
+    html = configureRouteSchemas(html, route)
     html = updateTitle(html, page.title)
     html = updateMeta(html, 'name', 'description', page.description)
     html = updateCanonical(html, page.canonicalUrl)
