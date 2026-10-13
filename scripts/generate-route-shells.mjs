@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { createServer } from 'vite'
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const outputDirectory = resolve(projectRoot, 'dist')
@@ -40,24 +41,71 @@ function updateTitle(html, title) {
   return html.replace(titlePattern, `<title>${title.replaceAll('&', '&amp;').replaceAll('<', '&lt;')}</title>`)
 }
 
-for (const [route, page] of Object.entries(metadata)) {
-  let html = template
-  html = updateTitle(html, page.title)
-  html = updateMeta(html, 'name', 'description', page.description)
-  html = updateCanonical(html, page.canonicalUrl)
-  html = updateMeta(html, 'property', 'og:title', page.ogTitle)
-  html = updateMeta(html, 'property', 'og:description', page.ogDescription)
-  html = updateMeta(html, 'property', 'og:url', page.canonicalUrl)
-  html = updateMeta(html, 'name', 'twitter:title', page.ogTitle)
-  html = updateMeta(html, 'name', 'twitter:description', page.ogDescription)
+function injectRootContent(html, content, route) {
+  const rootPattern = /<div id="root"><\/div>/g
+  const rootCount = [...html.matchAll(rootPattern)].length
+  if (rootCount !== 1) throw new Error(`Expected one empty React mount in ${route} shell, found ${rootCount}`)
+  return html.replace(rootPattern, `<div id="root">${content}</div>`)
+}
 
-  // Assert each route shell contains one correct copy of every required field.
-  for (const [label, value] of Object.entries({ title: page.title, description: page.description, canonicalUrl: page.canonicalUrl, ogTitle: page.ogTitle, ogDescription: page.ogDescription })) {
-    if (!html.includes(value)) throw new Error(`Generated ${route} shell is missing ${label}`)
+function assertOneMatch(html, pattern, label, route) {
+  const count = [...html.matchAll(pattern)].length
+  if (count !== 1) throw new Error(`Expected one ${label} in ${route} shell, found ${count}`)
+}
+
+const vite = await createServer({
+  configFile: resolve(projectRoot, 'vite.config.ts'),
+  root: projectRoot,
+  mode: 'production',
+  server: { middlewareMode: true },
+  appType: 'custom',
+  logLevel: 'error',
+})
+
+try {
+  const { renderRoute } = await vite.ssrLoadModule('/src/entry-server.tsx')
+  const generatedShells = []
+
+  for (const [route, page] of Object.entries(metadata)) {
+    let html = template
+    html = updateTitle(html, page.title)
+    html = updateMeta(html, 'name', 'description', page.description)
+    html = updateCanonical(html, page.canonicalUrl)
+    html = updateMeta(html, 'property', 'og:title', page.ogTitle)
+    html = updateMeta(html, 'property', 'og:description', page.ogDescription)
+    html = updateMeta(html, 'property', 'og:url', page.canonicalUrl)
+    html = updateMeta(html, 'name', 'twitter:title', page.ogTitle)
+    html = updateMeta(html, 'name', 'twitter:description', page.ogDescription)
+
+    const renderedContent = renderRoute(route)
+    if (!renderedContent.includes('<main id="main-content"')) {
+      throw new Error(`Rendered ${route} content is missing the main landmark`)
+    }
+    html = injectRootContent(html, renderedContent, route)
+
+    // Assert each route shell contains one correct copy of its metadata and mount.
+    assertOneMatch(html, /<title>/gi, 'title', route)
+    assertOneMatch(html, /<meta name="description"/gi, 'description', route)
+    assertOneMatch(html, /<link rel="canonical"/gi, 'canonical URL', route)
+    assertOneMatch(html, /<meta property="og:title"/gi, 'Open Graph title', route)
+    assertOneMatch(html, /<meta property="og:description"/gi, 'Open Graph description', route)
+    assertOneMatch(html, /<meta name="twitter:title"/gi, 'Twitter title', route)
+    assertOneMatch(html, /<meta name="twitter:description"/gi, 'Twitter description', route)
+    assertOneMatch(html, /<div id="root">/gi, 'React mount', route)
+
+    for (const [label, value] of Object.entries({ title: page.title, description: page.description, canonicalUrl: page.canonicalUrl, ogTitle: page.ogTitle, ogDescription: page.ogDescription })) {
+      if (!html.includes(value)) throw new Error(`Generated ${route} shell is missing ${label}`)
+    }
+
+    const outputPath = route === '/' ? resolve(outputDirectory, 'index.html') : resolve(outputDirectory, route.slice(1), 'index.html')
+    generatedShells.push({ route, outputPath, html })
   }
 
-  const outputPath = route === '/' ? resolve(outputDirectory, 'index.html') : resolve(outputDirectory, route.slice(1), 'index.html')
-  await mkdir(dirname(outputPath), { recursive: true })
-  await writeFile(outputPath, html)
-  console.log(`Generated ${outputPath}`)
+  for (const { route, outputPath, html } of generatedShells) {
+    await mkdir(dirname(outputPath), { recursive: true })
+    await writeFile(outputPath, html)
+    console.log(`Generated ${outputPath} with prerendered ${route} content`)
+  }
+} finally {
+  await vite.close()
 }
