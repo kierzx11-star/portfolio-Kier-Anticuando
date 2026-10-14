@@ -228,4 +228,4 @@
 .showcase-copy .tags{margin-top:2px}
 @media(max-width:720px){.project-image-kind{left:9px;bottom:9px;font-size:8px}.barili-concept-features{gap:5px}.barili-concept-features>div{padding:7px;min-height:48px}.barili-concept-features span{font-size:8px}.barili-concept-heading>small{font-size:9px}}
 
-@media(max-width:350px){.page-hero h1{font-size:40px;letter-spacing:-2px}}
+@media(max-width:350px){.page-hero h1{font-size:40px;letter-spacing:-2px}.page-hero.project-detail-hero h1{max-width:100%;font-size:clamp(32px,10vw,36px);line-height:1.12;letter-spacing:-1.5px;overflow-wrap:anywhere}}
