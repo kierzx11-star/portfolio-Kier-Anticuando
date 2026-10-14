@@ -7,20 +7,20 @@ import './index.css'
 
 const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
 
+const featuredProjects = projects.filter(project=>project.featured)
 const name = 'Kier Whensel Anticuando'
 const nav = [['Work','/work'],['Services','/services'],['About','/about'],['Contact','/contact']]
-const featuredProjects = projects.filter((project)=>project.featured)
 
 function NavLink(props:React.ComponentProps<typeof RouterNavLink>){return <RouterNavLink viewTransition {...props}/>}
 
 function Header() {
   const [open,setOpen] = useState(false)
-  return <header className="header"><div className="nav-wrap"><NavLink to="/" className="brand" onClick={()=>setOpen(false)}><span className="monogram">KA</span><span className="brand-name">{name}</span></NavLink><button className="mobile-toggle" aria-label={open?'Close menu':'Open menu'} aria-expanded={open} aria-controls="primary-navigation" onClick={()=>setOpen(!open)}>{open?<X/>:<Menu/>}</button><nav id="primary-navigation" className={open?'nav-links open':'nav-links'}>{nav.map(([label,path])=><NavLink key={path} to={path} end={path==='/'} className={path==='/contact'?'nav-cta':undefined} onClick={()=>setOpen(false)}>{label}</NavLink>)}</nav></div></header>
+  const isHome = useLocation().pathname === '/'
+  return <header className={isHome?'header home-header':'header'}><div className="nav-wrap"><NavLink to="/" className="brand" onClick={()=>setOpen(false)}><span className="monogram">KA</span><span className="brand-name">{name}</span></NavLink><button className="mobile-toggle" aria-label={open?'Close menu':'Open menu'} aria-expanded={open} aria-controls="primary-navigation" onClick={()=>setOpen(!open)}>{open?<X/>:<Menu/>}</button><nav id="primary-navigation" className={open?'nav-links open':'nav-links'}>{nav.map(([label,path])=><NavLink key={path} to={path} end={path==='/'} className={path==='/contact'?'nav-cta':undefined} onClick={()=>setOpen(false)}>{label}</NavLink>)}</nav></div></header>
 }
 
 function GithubMark(){return <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 .9a11.1 11.1 0 0 0-3.51 21.63c.56.1.76-.24.76-.54v-2.1c-3.1.67-3.75-1.32-3.75-1.32-.5-1.29-1.23-1.63-1.23-1.63-1.01-.69.08-.68.08-.68 1.12.08 1.7 1.15 1.7 1.15.99 1.7 2.6 1.21 3.23.92.1-.72.39-1.21.7-1.49-2.48-.28-5.09-1.24-5.09-5.52 0-1.22.44-2.21 1.15-2.99-.12-.29-.5-1.42.11-2.95 0 0 .94-.3 3.05 1.14a10.6 10.6 0 0 1 5.55 0c2.1-1.44 3.04-1.14 3.04-1.14.61 1.53.23 2.66.11 2.95.72.78 1.15 1.77 1.15 2.99 0 4.3-2.61 5.24-5.1 5.52.4.35.75 1.02.75 2.06v3.09c0 .3.2.65.77.54A11.1 11.1 0 0 0 12 .9Z"/></svg>}
-function Footer(){return <footer className="footer"><div className="footer-main"><NavLink className="brand" to="/"><span className="monogram">KA</span><span className="brand-name">{name}</span></NavLink><span className="footer-phrase">Build <b>·</b> Learn <b>·</b> Grow</span><div className="footer-links">{nav.map(([l,p])=><NavLink key={p} to={p} end={p==='/'}>{l}</NavLink>)}<a href="https://github.com/kierzx11-star" target="_blank" rel="noreferrer" aria-label="GitHub"><GithubMark/></a></div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} {name}</span><span>Designed & built with care.</span></div></footer>}
-
+function Footer(){return <footer className="footer portfolio-footer"><div className="footer-main" data-reveal="copy"><NavLink className="brand footer-brand" to="/"><span className="monogram">KA</span><span className="footer-identity"><span className="footer-name">{name}</span><span className="footer-phrase">Build <b>·</b> Learn <b>·</b> Grow</span></span></NavLink><nav className="footer-links" aria-label="Footer navigation">{nav.map(([l,p])=><NavLink key={p} to={p} end={p==='/'}>{l}</NavLink>)}<a href="https://github.com/kierzx11-star" target="_blank" rel="noreferrer" aria-label="GitHub"><GithubMark/></a></nav></div><div className="footer-bottom" data-reveal="copy"><span>© {new Date().getFullYear()} {name}</span><span>Designed &amp; built with care.</span></div></footer>}
 function PageTitle(){const location=useLocation();useEffect(()=>{const pages=routeMetadata as Record<string,{title:string;description:string;canonicalUrl:string;ogTitle:string;ogDescription:string}>;const legacyPaths:Record<string,string>={'/projects':'/work','/skills':'/about','/experience':'/about'};const normalizedPath=location.pathname.replace(/\/+$/,'')||'/';const path=pages[normalizedPath]?normalizedPath:legacyPaths[normalizedPath]??(normalizedPath.startsWith('/projects/')?'/work':null);const page=path?pages[path]:null;if(page){document.title=page.title;document.querySelector<HTMLMetaElement>('meta[name="description"]')?.setAttribute('content',page.description);document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.setAttribute('href',page.canonicalUrl);document.querySelector<HTMLMetaElement>('meta[property="og:title"]')?.setAttribute('content',page.ogTitle);document.querySelector<HTMLMetaElement>('meta[property="og:description"]')?.setAttribute('content',page.ogDescription);document.querySelector<HTMLMetaElement>('meta[name="twitter:title"]')?.setAttribute('content',page.ogTitle);document.querySelector<HTMLMetaElement>('meta[name="twitter:description"]')?.setAttribute('content',page.ogDescription);document.querySelector<HTMLMetaElement>('meta[property="og:type"]')?.setAttribute('content','website');document.querySelector<HTMLMetaElement>('meta[property="og:url"]')?.setAttribute('content',page.canonicalUrl)}else{document.title='Page not found | Kier Whensel Anticuando'}},[location.pathname]);return null}
 function RevealObserver(){const location=useLocation();useEffect(()=>{document.documentElement.classList.add('js-motion');const targets=[...document.querySelectorAll<HTMLElement>('[data-reveal]')];if(window.matchMedia('(prefers-reduced-motion: reduce)').matches||!('IntersectionObserver'in window)){targets.forEach(el=>el.classList.add('is-visible'));return}const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-visible');observer.unobserve(entry.target)}}),{threshold:0,rootMargin:'0px 0px 140px 0px'});targets.forEach(el=>observer.observe(el));let frame=0;const revealPassed=()=>{frame=0;targets.forEach(el=>{if(!el.classList.contains('is-visible')&&el.getBoundingClientRect().top<window.innerHeight+140){el.classList.add('is-visible');observer.unobserve(el)}})};const onScroll=()=>{if(!frame)frame=requestAnimationFrame(revealPassed)};window.addEventListener('scroll',onScroll,{passive:true});return()=>{observer.disconnect();window.removeEventListener('scroll',onScroll);if(frame)cancelAnimationFrame(frame)}},[location.pathname]);return null}
 function RouteMotion({children}:{children:React.ReactNode}){const location=useLocation();const previousPath=useRef(location.pathname);const [transitioning,setTransitioning]=useState(false);useBrowserLayoutEffect(()=>{const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;const scrollToHash=()=>{if(location.hash)document.getElementById(decodeURIComponent(location.hash.slice(1)))?.scrollIntoView({behavior:reduced?'auto':'smooth'})};if(previousPath.current===location.pathname){scrollToHash();return}previousPath.current=location.pathname;if(location.hash)requestAnimationFrame(scrollToHash);else window.scrollTo({top:0,behavior:reduced?'auto':'smooth'});if(reduced)return;document.documentElement.classList.add('route-transition-active');setTransitioning(true);const timer=window.setTimeout(()=>{document.documentElement.classList.remove('route-transition-active');setTransitioning(false)},700);return()=>{window.clearTimeout(timer);document.documentElement.classList.remove('route-transition-active')}},[location.pathname,location.hash,location.key]);return <>{children}{transitioning&&<div key={location.key} className="route-transition-overlay" aria-hidden="true"><span>KA</span><i/></div>}</>}
@@ -31,8 +31,147 @@ function HeroParallax(){useEffect(()=>{const art=document.querySelector<HTMLElem
 
 function HeroScroll(){useEffect(()=>{const hero=document.querySelector<HTMLElement>('.hero');if(!hero||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;let frame=0;const update=()=>{frame=0;const progress=Math.min(1,Math.max(0,-hero.getBoundingClientRect().top/Math.max(hero.offsetHeight*.72,1)));hero.style.setProperty('--hero-scroll-y',`${progress*-22}px`);hero.style.setProperty('--hero-scroll-opacity',String(1-progress*.3))};const schedule=()=>{if(!frame)frame=requestAnimationFrame(update)};update();window.addEventListener('scroll',schedule,{passive:true});window.addEventListener('resize',schedule);return()=>{window.removeEventListener('scroll',schedule);window.removeEventListener('resize',schedule);if(frame)cancelAnimationFrame(frame)}},[]);return null}
 
-function FeaturedProjectsOverview(){return <section className="section featured featured-showcase" id="featured"><div className="showcase-layout"><aside className="showcase-aside" data-reveal="side"><span className="showcase-kicker">SELECTED WORK</span><h2>Featured<br/><span>Projects.</span></h2><p>Three real website projects from my portfolio. Visit the Work page to see all six.</p><nav className="showcase-index" aria-label="Featured projects">{featuredProjects.map((project,index)=><a href={`/work#showcase-${project.slug}`} key={project.slug}><span>{String(index+1).padStart(2,'0')}</span>{project.name}</a>)}</nav><NavLink className="text-link showcase-all" to="/work">View All Projects <ArrowRight size={15}/></NavLink></aside><div className="showcase-list">{featuredProjects.map((project,index)=><FeaturedProject key={project.slug} project={project} index={index} total={featuredProjects.length} showDetailsLink/>)}</div></div></section>}
+function OpeningProjectRibbon(){
+  const stripRef=useRef<HTMLDivElement>(null)
+  const trackRef=useRef<HTMLDivElement>(null)
+  const pendingScroll=useRef<number|null>(null)
+  const [automaticAllowed,setAutomaticAllowed]=useState(false)
+  const [manual,setManual]=useState(false)
 
+  useEffect(()=>{
+    const media=window.matchMedia('(prefers-reduced-motion: no-preference)')
+    const configure=()=>setAutomaticAllowed(media.matches)
+    configure()
+    media.addEventListener('change',configure)
+    return()=>media.removeEventListener('change',configure)
+  },[])
+
+  useBrowserLayoutEffect(()=>{
+    if(manual&&pendingScroll.current!==null&&stripRef.current)stripRef.current.scrollLeft=pendingScroll.current
+    pendingScroll.current=null
+  },[manual])
+
+  function pauseForBrowsing(){
+    const track=trackRef.current
+    if(!track)return
+    if(!manual&&automaticAllowed)pendingScroll.current=Math.max(0,-new DOMMatrixReadOnly(getComputedStyle(track).transform).m41)
+    setManual(true)
+  }
+
+  return <section className="opening-ribbon" aria-label="Project preview gallery">
+    <div ref={stripRef} className={`home-preview-strip${automaticAllowed&&!manual?' is-looping':''}`} onPointerDown={pauseForBrowsing} onFocusCapture={event=>{
+      pauseForBrowsing()
+      const target=event.target
+      requestAnimationFrame(()=>{if(target instanceof HTMLElement)target.scrollIntoView({block:'nearest',inline:'nearest',behavior:'instant'})})
+    }} onKeyDown={event=>{
+      if(event.key!=='ArrowRight'&&event.key!=='ArrowLeft')return
+      const links=[...event.currentTarget.querySelectorAll<HTMLAnchorElement>('.home-preview-group:first-child a')]
+      const current=links.indexOf(document.activeElement as HTMLAnchorElement)
+      if(current<0)return
+      event.preventDefault()
+      links[(current+(event.key==='ArrowRight'?1:-1)+links.length)%links.length]?.focus()
+    }}>
+      <div ref={trackRef} className="home-preview-track">
+        {[false,true].map(duplicate=><div className={`home-preview-group${duplicate?' is-copy':''}`} key={String(duplicate)} aria-hidden={duplicate?true:undefined}>
+          {projects.map(project=><NavLink className="home-preview" to={`/work/${project.slug}`} key={project.slug} tabIndex={duplicate?-1:0} aria-label={`View ${project.name} project details${project.imageKind==='concept'?' — academic concept, not deployed':''}`}>
+            <div className="home-preview-image"><ProjectArt project={project}/></div>
+          </NavLink>)}
+        </div>)}
+      </div>
+    </div>
+  </section>
+}
+
+function FeaturedProjectsOverview(){
+  const sectionRef=useRef<HTMLElement>(null)
+  const [enhanced,setEnhanced]=useState(false)
+  const [active,setActive]=useState(0)
+  const activeRef=useRef(0)
+
+  useBrowserLayoutEffect(()=>{
+    const section=sectionRef.current
+    if(!section)return
+    const media=window.matchMedia('(min-width: 1100px) and (min-height: 620px) and (prefers-reduced-motion: no-preference)')
+    let frame=0
+    const update=()=>{
+      frame=0
+      if(!media.matches)return
+      const distance=Math.max(1,section.offsetHeight-window.innerHeight)
+      const progress=Math.max(0,Math.min(1,-section.getBoundingClientRect().top/distance))
+      // Hold each composition for reading, then scrub the image and text together.
+      const stage=progress*featuredProjects.length
+      const base=Math.min(featuredProjects.length-1,Math.floor(stage))
+      const blend=base===featuredProjects.length-1?0:Math.max(0,Math.min(1,(stage-base-.5)/.46))
+      const eased=blend*blend*(3-2*blend)
+      const index=Math.min(featuredProjects.length-1,base+(eased>=.5?1:0))
+      section.style.setProperty('--feature-progress',String(progress))
+      section.querySelectorAll<HTMLElement>('.home-project-scene').forEach((scene,i)=>{
+        const opacity=i===base?1-eased:i===base+1?eased:0
+        const travel=i===base?-eased:i===base+1?1-eased:1
+        scene.style.setProperty('--scene-opacity',opacity>0?'1':'0')
+        scene.style.setProperty('--image-inset',`${i===base+1?(1-eased)*100:0}%`)
+        scene.style.setProperty('--copy-opacity',String(i===base?Math.max(0,1-eased*2.2):i===base+1?Math.max(0,(eased-.4)/.6):0))
+        scene.style.setProperty('--scene-y',`${travel*72}px`)
+        scene.style.setProperty('--scene-tilt',`${travel*-9}deg`)
+        scene.style.setProperty('--image-x',`${travel*110}px`)
+        scene.style.setProperty('--image-scale',String(1-Math.abs(travel)*.12))
+        scene.style.setProperty('--image-roll',`${travel*2.5}deg`)
+        scene.style.setProperty('--copy-y',`${travel*105}px`)
+        scene.style.setProperty('--details-y',`${travel*45}px`)
+      })
+      if(index!==activeRef.current){
+        const oldScene=section.querySelectorAll('.home-project-scene')[activeRef.current]
+        if(oldScene?.contains(document.activeElement))section.querySelector<HTMLButtonElement>(`[data-project-select="${index}"]`)?.focus({preventScroll:true})
+        activeRef.current=index
+        setActive(index)
+      }
+    }
+    const schedule=()=>{if(!frame)frame=requestAnimationFrame(update)}
+    const configure=()=>{setEnhanced(media.matches);schedule()}
+    configure()
+    window.addEventListener('scroll',schedule,{passive:true})
+    window.addEventListener('resize',configure)
+    media.addEventListener('change',configure)
+    return()=>{window.removeEventListener('scroll',schedule);window.removeEventListener('resize',configure);media.removeEventListener('change',configure);if(frame)cancelAnimationFrame(frame)}
+  },[])
+
+  function selectProject(index:number){
+    const section=sectionRef.current
+    if(!section)return
+    if(enhanced){
+      const top=window.scrollY+section.getBoundingClientRect().top
+      window.scrollTo({top:top+(index+.2)/featuredProjects.length*(section.offsetHeight-window.innerHeight),behavior:'smooth'})
+    }else document.getElementById(`home-project-${featuredProjects[index].slug}`)?.scrollIntoView({behavior:'auto',block:'start'})
+  }
+
+  return <>
+    <section ref={sectionRef} className={`home-project-sequence${enhanced?' is-scroll-linked':''}`} id="featured" aria-labelledby="home-featured-title">
+      <div className="home-project-viewport">
+        <div className="home-section-rule"><h2 id="home-featured-title">04 / SELECTED WORK</h2><NavLink to="/work">View All Projects <ArrowUpRight size={16}/></NavLink></div>
+        <div className="home-project-stage">
+          {featuredProjects.map((project,index)=>{
+            const inactive=enhanced&&active!==index
+            return <article key={project.slug} id={`home-project-${project.slug}`} className={`home-project-scene${active===index?' is-current':''}`} aria-labelledby={`home-project-title-${project.slug}`} aria-hidden={inactive?true:undefined} inert={inactive}>
+              <span className="home-project-ghost-number" aria-hidden="true">{String(index+1).padStart(2,'0')}</span>
+              <NavLink className="home-project-image" to={`/work/${project.slug}`} aria-label={`View ${project.name} project details`}><ProjectArt project={project}/></NavLink>
+              <div className="home-project-copy"><span className="home-project-meta">{String(index+1).padStart(2,'0')} / {String(featuredProjects.length).padStart(2,'0')} <span>{project.category}</span></span>
+                <h3 id={`home-project-title-${project.slug}`}><NavLink to={`/work/${project.slug}`}>{project.name}</NavLink></h3>
+                {project.imageKind==='concept'&&<span className="home-project-academic">Academic concept · not deployed</span>}
+                <p>{project.summary}</p>
+                <div className="tags">{project.technologies.map(t=><span key={t}>{t}</span>)}</div>
+                <p className="home-project-role"><span>ROLE</span>{project.role}</p>
+                <div className="home-project-links"><NavLink className="text-link" to={`/work/${project.slug}`}>View project details <ArrowUpRight size={16}/></NavLink>{project.url&&<a className="showcase-live" href={project.url} target="_blank" rel="noreferrer" aria-label={`Visit ${project.name} website`}>Visit live website <ArrowUpRight size={15}/></a>}</div>
+              </div>
+            </article>
+          })}
+        </div>
+        <nav className="home-project-controls" aria-label="Select a project">{featuredProjects.map((project,index)=><button key={project.slug} type="button" data-project-select={index} aria-controls={`home-project-${project.slug}`} aria-label={`Show ${project.name}, project ${index+1} of ${featuredProjects.length}`} aria-current={enhanced&&active===index?'step':undefined} onClick={()=>selectProject(index)}><span>{String(index+1).padStart(2,'0')}</span><i aria-hidden="true"/></button>)}</nav>
+        <div className="home-project-scroll-hint" aria-hidden="true"><span>{String(active+1).padStart(2,'0')} / {String(featuredProjects.length).padStart(2,'0')}</span><span>SCROLL TO EXPLORE <ArrowDownRight size={13}/></span></div>
+      </div>
+    </section>
+    <div className="home-project-ending"><NavLink className="text-link" to="/work">View All Projects <ArrowRight size={18}/></NavLink></div>
+  </>
+}
 function ScrollJourney(){useEffect(()=>{const section=document.querySelector<HTMLElement>('.timeline-section');if(!section)return;const media=window.matchMedia('(max-width: 720px), (prefers-reduced-motion: reduce)');let frame=0;const items=[...section.querySelectorAll<HTMLElement>('.timeline>div')];const update=()=>{frame=0;if(media.matches){items.forEach(item=>{item.style.removeProperty('--journey-opacity');item.style.removeProperty('--journey-y')});return}const rect=section.getBoundingClientRect();const progress=Math.max(0,Math.min(1,-rect.top/Math.max(section.offsetHeight-window.innerHeight,1)));section.style.setProperty('--journey-progress',String(progress));const position=progress*(items.length-1);items.forEach((item,index)=>{const distance=Math.abs(index-position);const opacity=Math.max(.38,1-distance*.62);item.style.setProperty('--journey-opacity',String(opacity));item.style.setProperty('--journey-y',`${Math.min(distance*18,28)}px`)})};const schedule=()=>{if(!frame)frame=requestAnimationFrame(update)};update();window.addEventListener('scroll',schedule,{passive:true});window.addEventListener('resize',schedule);media.addEventListener('change',schedule);return()=>{window.removeEventListener('scroll',schedule);window.removeEventListener('resize',schedule);media.removeEventListener('change',schedule);if(frame)cancelAnimationFrame(frame);items.forEach(item=>{item.style.removeProperty('--journey-opacity');item.style.removeProperty('--journey-y')})}},[]);return null}
 
 const projectImageAlt:Record<string,string>={
@@ -47,11 +186,59 @@ function ProjectArt({project}:{project:(typeof projects)[number]}){const alt=pro
 
 function FeaturedProject({project,index,total,showDetailsLink}:{project:(typeof projects)[number],index:number,total:number,showDetailsLink:boolean}){const order=String(index+1).padStart(2,'0');const totalLabel=String(total).padStart(2,'0');const destination=`/work/${project.slug}`;return <article className="showcase-project" id={`showcase-${project.slug}`} style={{'--project-order':index,'--project-delay':`${index*90}ms`} as React.CSSProperties}><NavLink to={destination} className="showcase-visual" data-reveal="image" aria-label={`View ${project.name} project details`}><ProjectArt project={project}/><span className="showcase-visual-index">{order} <i/> {totalLabel}</span></NavLink><div className="showcase-copy"><div className="showcase-meta" data-reveal="copy"><span>{order} / {totalLabel}</span><span>{project.category}</span></div><h3 data-reveal="heading"><NavLink to={destination}>{project.name}<ArrowUpRight size={19}/></NavLink></h3><p data-reveal="copy">{project.summary}</p>{project.technologies.length>0&&<div className="tags" data-reveal="copy">{project.technologies.map(t=><span key={t}>{t}</span>)}</div>}<p className="project-role" data-reveal="copy"><span>ROLE</span>{project.role}</p><div className="showcase-actions" data-reveal="copy">{showDetailsLink&&<NavLink className="text-link" to={destination}>View project details <ArrowRight size={15}/></NavLink>}{project.url&&<a className="showcase-live" href={project.url} target="_blank" rel="noreferrer" aria-label={`Visit ${project.name} website`}>Visit live website <ArrowUpRight size={15}/></a>}</div></div></article>}
 
-function Home(){return <><HeroScroll/><HeroParallax/><section className="hero"><div className="hero-grid"><div className="hero-copy"><h1 className="hero-name">Kier Whensel<br/><span>Anticuando</span><small className="hero-period">.</small></h1><div className="hero-role">Website Developer <i/> WordPress & Frontend <i/> Learning C# / .NET</div><p>I build functional, responsive websites and am expanding my skills in backend engineering, APIs, and the .NET ecosystem.</p><div className="hero-actions"><NavLink className="button button-blue" to="/work">Explore My Work <ArrowRight size={17}/></NavLink><NavLink className="button button-outline" to="/contact">Contact Me <ArrowUpRight size={16}/></NavLink></div><div className="hero-note"><span>01</span> A developer in progress, building with intention.</div></div><Art/></div><a className="scroll-cue" href="#featured"><span/> SCROLL TO EXPLORE <ArrowDownRight size={15}/></a><div className="hero-index">PORTFOLIO · 2026</div></section>
+function ServiceCapabilityArt({index}:{index:number}){
+  return <svg className={`home-capability-art capability-art-${index}`} viewBox="0 0 320 170" fill="none" aria-hidden="true" focusable="false">
+    {index===0?<><defs><linearGradient id="capability-panels" x1="25" y1="130" x2="150" y2="30" gradientUnits="userSpaceOnUse"><stop stopColor="#8bdbc9" stopOpacity=".28"/><stop offset="1" stopColor="#8bdbc9" stopOpacity="0"/></linearGradient></defs><path d="M175 86H308" stroke="#8bdbc9" strokeOpacity=".55"/><circle cx="175" cy="86" r="3" fill="#8bdbc9"/><path d="M40 24H139V133H40z" stroke="#8bdbc9" strokeOpacity=".23"/><path d="M40 40 139 23V123L40 140z" fill="url(#capability-panels)" stroke="#8bdbc9" strokeOpacity=".6"/><path d="m56 48 99-17v109H56z" stroke="#8bdbc9" strokeOpacity=".4"/><path d="m72 55 99-17v115H72z" stroke="#8bdbc9" strokeOpacity=".3"/></>:index===1?<><defs><radialGradient id="capability-sphere" cx=".25" cy=".15" r=".9"><stop stopColor="#8bdbc9" stopOpacity=".65"/><stop offset=".55" stopColor="#285f54" stopOpacity=".55"/><stop offset="1" stopColor="#050908"/></radialGradient></defs><path d="M158 86H308" stroke="#8bdbc9" strokeOpacity=".5"/><ellipse cx="112" cy="80" rx="83" ry="51" transform="rotate(45 112 80)" stroke="#8bdbc9" strokeOpacity=".4"/><ellipse cx="102" cy="67" rx="75" ry="41" transform="rotate(-35 102 67)" stroke="#8bdbc9" strokeOpacity=".45"/><circle cx="117" cy="90" r="47" fill="url(#capability-sphere)" stroke="#8bdbc9" strokeOpacity=".55"/><circle cx="290" cy="86" r="3.5" fill="#8bdbc9"/><circle cx="34" cy="62" r="2.5" fill="#8bdbc9"/></>:<><defs><radialGradient id="capability-care" cx=".85" cy=".85" r=".95"><stop stopColor="#8bdbc9" stopOpacity=".25"/><stop offset="1" stopColor="#050908" stopOpacity="0"/></radialGradient></defs><circle cx="140" cy="160" r="128" stroke="#8bdbc9" strokeOpacity=".18"/><circle cx="140" cy="160" r="95" fill="url(#capability-care)" stroke="#8bdbc9" strokeOpacity=".55"/><path d="M140 33v137M12 160h256" stroke="#8bdbc9" strokeOpacity=".3"/><circle cx="140" cy="65" r="3.5" fill="#8bdbc9"/></>}
+  </svg>
+}
+
+function ToolkitGlyph({label}:{label:string}){
+  return <span className={`toolkit-glyph toolkit-glyph-${label.toLowerCase().replace(/[^a-z]/g,'')}`} aria-hidden="true">{label==='HTML'?<Layers3 size={29}/>:label==='CSS'?<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="14" stroke="currentColor"/><circle cx="20" cy="20" r="9" stroke="currentColor" strokeWidth="2"/><circle cx="20" cy="20" r="3" fill="currentColor"/></svg>:label==='Supabase'?<svg viewBox="0 0 40 40" fill="currentColor"><path d="m22 3-15 21h12l-1 13 15-21H21z"/></svg>:label==='Firebase'?<svg viewBox="0 0 40 40" fill="currentColor"><path d="m9 30 5-25 8 14 5-10 7 21-14 7z" fillOpacity=".85"/><path d="m9 30 13-11-2 18z" fillOpacity=".5"/></svg>:<span>{label==='WordPress'?'W':label==='JavaScript'?'JS':label==='Canva'?'C':label==='Figma'?'Fg':label}</span>}</span>
+}
+
+function HomeToolkit(){
+  const toolkit=[
+    {label:'WordPress',level:'Practical',description:'Website and page development with WordPress.'},
+    {label:'HTML',level:'Practical',description:'Page structure and custom HTML implementation.'},
+    {label:'CSS',level:'Practical',description:'Responsive layouts and website styling.'},
+    {label:'JavaScript',level:'Practical',description:'Frontend implementation with JavaScript.'},
+    {label:'Supabase',level:'Exploring',description:'Exploring backend and database tools.'},
+    {label:'Firebase',level:'Exploring',description:'Used in the Barili academic prototype; continuing to explore.'},
+    {label:'Canva',level:'Exploring',description:'Exploring tools for visual design.'},
+    {label:'Figma',level:'Exploring',description:'Exploring tools for interface design.'},
+    {label:'C#',level:'Learning',description:'Learning C# fundamentals.'},
+    {label:'.NET',level:'Learning',description:'Learning the .NET ecosystem.'},
+  ]
+  return <section className="home-toolkit" id="home-background" aria-labelledby="home-toolkit-title">
+    <div className="home-toolkit-intro"><span className="home-toolkit-label">06 / EXPERIENCE, EDUCATION &amp; TOOLS</span><h2 id="home-toolkit-title">My Tech<br/><span>Stack.</span></h2><p>A toolkit I'm using today and skills I'm actively developing for what's next.</p><NavLink className="text-link" to="/about">Skills &amp; background <ArrowRight size={19}/></NavLink>
+      <ol className="toolkit-milestones" aria-label="Project experience and education"><li><span>01</span><div><h3>Website projects</h3><p>Three featured projects</p></div></li><li><span>02</span><div><h3>Developer</h3><p>Joyno Inc.</p></div></li><li><span>03</span><div><h3>BS Information Technology</h3><p>CTU — Barili Campus · 2026</p></div></li></ol>
+    </div>
+    <div className="toolkit-cards">{toolkit.map((tool,index)=><NavLink to="/about" className="toolkit-card" key={tool.label} aria-label={`View my ${tool.label} skills and background — ${tool.level}`} data-reveal="card" style={{'--reveal-delay':`${index*70}ms`} as React.CSSProperties}><div className="toolkit-card-top"><ToolkitGlyph label={tool.label}/><span className="toolkit-level">{tool.level}</span></div><h3>{tool.label}</h3><p>{tool.description}</p><span className="toolkit-card-footer" aria-hidden="true"><i/><ArrowRight size={15}/></span></NavLink>)}<div className="toolkit-signature" aria-hidden="true"><span>+</span><p>BUILD<br/>LEARN<br/>GROW</p><i/></div></div>
+  </section>
+}
+
+function Home(){return <><HeroScroll/><HeroParallax/><section className="hero home-editorial"><div className="hero-grid"><div className="hero-copy"><span className="home-hero-index">WEB DEVELOPER / KIER ANTICUANDO</span><h1 className="hero-name">Kier Whensel<br/><span>Anticuando</span><small className="hero-period">.</small></h1><div className="hero-role">Website Developer <i/> WordPress & Frontend <i/> Learning C# / .NET</div><p>I build functional, responsive websites and am expanding my skills in backend engineering, APIs, and the .NET ecosystem.</p><div className="hero-actions"><NavLink className="button button-blue" to="/work">Explore My Work <ArrowRight size={17}/></NavLink><NavLink className="button button-outline" to="/contact">Contact Me <ArrowUpRight size={16}/></NavLink></div><div className="hero-note">Growing skills · backend development &amp; AI-assisted workflows</div></div><Art/></div><a className="scroll-cue" href="#featured"><span/> SCROLL TO EXPLORE <ArrowDownRight size={15}/></a><div className="hero-index">PORTFOLIO · 2026</div></section>
+  <OpeningProjectRibbon/>
+  <section className="home-about" id="home-introduction" aria-labelledby="home-introduction-title">
+    <div className="home-about-lead"><span className="home-about-label">03 / ABOUT</span><h2 id="home-introduction-title"><span>From building pages</span><span>to understanding</span><span>what's behind them.</span></h2><p>I'm Kier, a developer building practical experience through real website work and continued learning.</p><span className="home-about-ornament" aria-hidden="true"><i/><b/></span></div>
+    <div className="home-about-biography"><p>My professional experience is rooted in website development. At Joyno Inc., I worked as a developer for approximately six months.</p><p>I graduated with a Bachelor of Science in Information Technology from Cebu Technological University — Barili Campus. I am now growing toward backend development and learning how APIs, databases, C#, and .NET fit into complete applications.</p><NavLink className="text-link" to="/about">Skills &amp; background <ArrowRight size={19}/></NavLink></div>
+    <ol className="home-about-timeline" aria-label="Background and current learning">
+      <li><span className="home-about-icon" aria-hidden="true"><BriefcaseBusiness size={20}/></span><div><h3>Experience</h3><p>Joyno Inc.</p><small>Developer (approx. 6 months)</small></div></li>
+      <li><span className="home-about-icon" aria-hidden="true"><GraduationCap size={21}/></span><div><h3>Education</h3><p>Cebu Technological University<br/>Barili Campus</p><small>BS Information Technology<br/>(2026)</small></div></li>
+      <li><span className="home-about-icon" aria-hidden="true"><Code2 size={21}/></span><div><h3>Current focus · Learning</h3><p>Backend development &amp; C#/.NET</p><small>Learning APIs, databases, and complete applications.</small></div></li>
+    </ol>
+  </section>
   <FeaturedProjectsOverview/>
-  <section className="section home-services"><div className="home-section-heading" data-reveal="heading"><div><span className="eyebrow">WHAT I DO</span><h2>Practical web work.<br/><span>Clear communication.</span></h2></div><NavLink className="text-link" to="/services">Explore services <ArrowRight size={15}/></NavLink></div><div className="home-service-preview">{[['01','WordPress development','Build and refine WordPress pages for real business needs.'],['02','Frontend implementation','Responsive interfaces built with HTML, CSS, and JavaScript.'],['03','Website care','Content updates, page revisions, and ongoing maintenance.']].map(([number,title,copy],i)=><NavLink key={number} to="/services" className="home-service-item" data-reveal="card" style={{'--reveal-delay':`${i*90}ms`} as React.CSSProperties}><span>{number}</span><div><h3>{title}</h3><p>{copy}</p></div><ArrowUpRight size={18}/></NavLink>)}</div></section>
-  <section className="section tech-section"><div className="tech-intro"><h2 data-reveal="heading">My Tech<br/><span>Stack.</span></h2><p data-reveal="copy">A toolkit I'm using today and skills I'm actively developing for what's next.</p><NavLink className="text-link" to="/about">Skills & background <ArrowRight size={15}/></NavLink></div><div className="tech-grid">{['WordPress','HTML','CSS','JavaScript','Supabase','Firebase','Canva','Figma'].map((x,i)=><div className="tech-chip" data-reveal="card" style={{'--reveal-delay':`${i*70}ms`} as React.CSSProperties} key={x}><span className="tech-chip-icon">{['W','5','#','JS','S','F','C','Fg'][i]}</span><b>{x}</b><small>{i<4?'Practical':'Exploring'}</small></div>)}<div className="tech-chip learning" data-reveal="card" style={{'--reveal-delay':'560ms'} as React.CSSProperties}><span className="tech-chip-icon">C#</span><b>C#</b><small>Learning</small></div><div className="tech-chip learning" data-reveal="card" style={{'--reveal-delay':'630ms'} as React.CSSProperties}><span className="tech-chip-icon">.N</span><b>.NET</b><small>Learning</small></div></div></section>
-  <section className="career-band"><div className="career-inner"><div data-reveal="heading"><h2>Let's Build<br/><span>Something Great.</span></h2><p>I'm open to opportunities in web development and C#/.NET development.</p><NavLink className="button button-blue" to="/contact">Contact Me <ArrowUpRight size={17}/></NavLink></div><div className="career-facts" data-reveal="side"><div><span>01</span><p><b>Website projects</b><small>Three featured projects</small></p></div><div><span>02</span><p><b>Developer</b><small>Joyno Inc.</small></p></div><div><span>03</span><p><b>BS Information Technology</b><small>CTU — Barili Campus · 2026</small></p></div></div></div></section>
+  <section className="section home-services" id="home-services" aria-labelledby="home-services-title"><div className="home-section-heading" data-reveal="heading"><div><span className="eyebrow">05 / SERVICES &amp; CAPABILITIES</span><h2 id="home-services-title">Practical web work.<br/><span>Clear communication.</span></h2></div><NavLink className="text-link" to="/services">Explore services <ArrowRight size={15}/></NavLink></div><div className="home-service-preview">{[['01','WordPress development','Build and refine WordPress pages for real business needs.'],['02','Frontend implementation','Responsive interfaces built with HTML, CSS, and JavaScript.'],['03','Website care','Content updates, page revisions, and ongoing maintenance.']].map(([number,title,copy],i)=><NavLink key={number} to="/services" className="home-service-item" data-reveal="card" style={{'--reveal-delay':`${i*90}ms`} as React.CSSProperties}><span className="home-service-number">{number}</span><div className="home-service-description"><h3>{title}</h3><p>{copy}</p></div><ServiceCapabilityArt index={i}/><ArrowUpRight className="home-service-arrow" size={22}/></NavLink>)}</div></section>
+  <HomeToolkit/>
+  <section className="home-connect" id="home-contact" aria-labelledby="home-contact-title">
+    <div className="home-connect-copy"><span className="home-connect-label">07 / LET'S CONNECT</span><h2 id="home-contact-title">Let's Build<br/><span>Something Great.</span></h2><p>I'm open to opportunities in web development and C#/.NET development.</p><NavLink className="home-connect-cta" to="/contact">Contact Me <ArrowUpRight size={21}/></NavLink></div>
+    <div className="home-connect-links">
+      <svg className="home-connect-orbit" viewBox="0 0 560 560" fill="none" aria-hidden="true" focusable="false"><defs><radialGradient id="connect-orbit-fill" cx=".85" cy=".65" r=".8"><stop stopColor="#8bdbc9" stopOpacity=".2"/><stop offset="1" stopColor="#040807" stopOpacity="0"/></radialGradient></defs><circle cx="310" cy="280" r="210" stroke="#8bdbc9" strokeOpacity=".3" strokeDasharray="2 4"/><ellipse cx="310" cy="280" rx="180" ry="100" transform="rotate(35 310 280)" stroke="#8bdbc9" strokeOpacity=".25"/><circle cx="335" cy="340" r="133" fill="url(#connect-orbit-fill)" stroke="#8bdbc9" strokeOpacity=".3"/><path d="M310 42V518" stroke="#8bdbc9" strokeOpacity=".35"/><circle cx="310" cy="70" r="3.5" fill="#8bdbc9"/><circle cx="310" cy="490" r="3.5" fill="#8bdbc9"/><circle cx="390" cy="112" r="46" stroke="#8bdbc9" strokeOpacity=".3" strokeDasharray="2 4"/><circle cx="390" cy="112" r="9" fill="#8bdbc9"/></svg>
+      <a className="github-link" href="https://github.com/kierzx11-star" target="_blank" rel="noreferrer"><span><GithubMark/></span><b>GitHub<small>github.com/kierzx11-star</small></b><ArrowRight/></a>
+      <a className="github-link email-contact-link" href="mailto:kierzx11@gmail.com" aria-label="Email Kier Whensel Anticuando at kierzx11@gmail.com"><span><Mail size={26}/></span><b>Email<small>kierzx11@gmail.com</small></b><ArrowRight/></a>
+    </div>
+  </section>
   </>}
 
 function PageHero({title,copy,className}:{title:React.ReactNode,copy:string,className?:string}){return <section className={`page-hero${className?` ${className}`:''}`}><div className="page-hero-inner"><h1 data-reveal="heading">{title}</h1><p data-reveal="copy">{copy}</p></div><span className="page-hero-index">KA / PORTFOLIO</span></section>}
